@@ -23,6 +23,8 @@ if (array_key_exists('pageid', $this->data)) {
 }
 
 header('X-Frame-Options: SAMEORIGIN');
+
+$config = \SimpleSAML\Configuration::getInstance();
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -35,9 +37,9 @@ header('X-Frame-Options: SAMEORIGIN');
 
     <script type="text/javascript" src="/<?php echo $this->data['baseurlpath']; ?>resources/script.js"></script>
 
-    <title>SEASON</title>
+    <title><?= $config->getString('theme.title', "SEASON FRAMEWORK")?></title>
 
-    <link rel="shortcut icon" href="<?= SimpleSAML\Module::getModuleURL('season/res/icon.ico'); ?>">
+    <link rel="shortcut icon" href="<?= $config->getString('theme.icon', SimpleSAML\Module::getModuleURL('season/res/icon.ico')) ?>">
     <link href="<?= SimpleSAML\Module::getModuleURL('season/libs/tabler/dist/css/tabler.min.css'); ?>" rel="stylesheet" />
     <link href="<?= SimpleSAML\Module::getModuleURL('season/libs/tabler/dist/css/demo.min.css'); ?>" rel="stylesheet" />
     <link href="<?= SimpleSAML\Module::getModuleURL('season/css/core.css'); ?>?time=<?= microtime() ?>" rel="stylesheet" />
@@ -62,7 +64,7 @@ header('X-Frame-Options: SAMEORIGIN');
                 </button>
                 <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
                     <a href="/<?= $this->data['baseurlpath']; ?>" style="margin-right: 12px;">
-                        <img src="<?= SimpleSAML\Module::getModuleURL('season/res/logo.png'); ?>" height="32" class="navbar-brand-image">
+                        <img src="<?= $config->getString('theme.logo', SimpleSAML\Module::getModuleURL('season/res/logo.png')) ?>" height="32" class="navbar-brand-image">
                     </a>
                     <?= (isset($this->data['header']) ? $this->data['header'] : 'SimpleSAMLphp'); ?>
                 </h1>
@@ -103,8 +105,6 @@ header('X-Frame-Options: SAMEORIGIN');
         <div class="content">
             <div class="container">
                 <?php
-                $config = \SimpleSAML\Configuration::getInstance();
-
                 if (!$config->getBoolean('production', true)) {
                     echo '<div class="caution">' . $this->t('{preprodwarning:warning:warning}') . '</div>';
                 }

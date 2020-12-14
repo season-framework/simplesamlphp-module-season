@@ -14,15 +14,16 @@ git clone https://github.com/season-framework/simplesamlphp-module-season season
 ```php
 // ...
 'theme.use' => 'season:season',
+
+// title string
+'theme.title' => 'season AUTH',
+// favicon url
+'theme.icon' => 'https://auth.season.co.kr/simplesaml/module.php/season/res/icon.ico',
+// logo url
+'theme.logo' => 'https://auth.season.co.kr/simplesaml/module.php/season/res/logo.png',
+// footer string
+'theme.footer' => 'Copyright &copy; 2020 <a href="https://www.season.co.kr">Season Inc.</a> All Rights Reserved.',
 // ...
-```
-
-- change logo & favicon
-
-```bash
-cd /path/to/simplesaml/modules/season/www/res/
-wget https://your.logo.url -O logo.png
-wget https://your.icon.url -O icon.ico
 ```
 
 ## License
