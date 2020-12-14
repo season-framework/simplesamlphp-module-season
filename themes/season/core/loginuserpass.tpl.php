@@ -1,3 +1,7 @@
+<?php
+$config = \SimpleSAML\Configuration::getInstance();
+?>
+
 <!doctype html>
 <html lang="en" dir="ltr">
 
@@ -15,7 +19,7 @@
   <meta name="MobileOptimized" content="320">
   <title>season Login</title>
 
-  <link rel="shortcut icon" href="<?= SimpleSAML\Module::getModuleURL('season/res/icon.ico'); ?>">
+  <link rel="shortcut icon" href="<?= $config->getString('theme.icon', SimpleSAML\Module::getModuleURL('season/res/icon.ico')) ?>">
   <link href="<?= SimpleSAML\Module::getModuleURL('season/libs/tabler/dist/css/tabler.min.css'); ?>" rel="stylesheet" />
   <link href="<?= SimpleSAML\Module::getModuleURL('season/css/dashboard.css'); ?>" rel="stylesheet" />
 </head>
@@ -27,7 +31,7 @@
         <div class="row">
           <div class="col col-login mx-auto">
             <div class="text-center mb-6">
-              <img src="/simplesaml/module.php/season/res/logo.png" class="h-7" alt="">
+              <img src="<?= $config->getString('theme.logo', SimpleSAML\Module::getModuleURL('season/res/logo.png')) ?>" class="h-7" alt="">
             </div>
             <?php
             if ($this->data['errorcode'] !== null) {
