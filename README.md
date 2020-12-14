@@ -1,5 +1,7 @@
 # simpleSAMLphp season module
 
+![season](/screenshots/config.png)
+
 ## How To Apply
 
 - download module
