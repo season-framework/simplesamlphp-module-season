@@ -1,30 +1,13 @@
 <?php
-$this->data['htmlinject'] = [
-    'htmlContentPre' => [],
-    'htmlContentPost' => [],
-    'htmlContentHead' => [],
-];
-
-$jquery = [];
-if (array_key_exists('jquery', $this->data)) {
-    $jquery = $this->data['jquery'];
-}
-
-if (array_key_exists('pageid', $this->data)) {
-    $hookinfo = [
-        'pre' => &$this->data['htmlinject']['htmlContentPre'],
-        'post' => &$this->data['htmlinject']['htmlContentPost'],
-        'head' => &$this->data['htmlinject']['htmlContentHead'],
-        'jquery' => &$jquery,
-        'page' => $this->data['pageid']
-    ];
-
-    SimpleSAML\Module::callHooks('seasoninject', $hookinfo);
-}
 
 header('X-Frame-Options: SAMEORIGIN');
 
+$basepath = \SimpleSAML\Utils\HTTP::getSelfURLHost();
+$current = \SimpleSAML\Utils\HTTP::getSelfURLNoQuery();
+$current = str_replace($basepath, "", $current);
+
 $config = \SimpleSAML\Configuration::getInstance();
+$seasonConfig = \SimpleSAML\Configuration::getOptionalConfig('module_season.php');
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -37,7 +20,7 @@ $config = \SimpleSAML\Configuration::getInstance();
 
     <script type="text/javascript" src="/<?php echo $this->data['baseurlpath']; ?>resources/script.js"></script>
 
-    <title><?= $config->getString('theme.title', "SEASON FRAMEWORK")?></title>
+    <title><?= $config->getString('theme.title', "SEASON FRAMEWORK") ?></title>
 
     <link rel="shortcut icon" href="<?= $config->getString('theme.icon', SimpleSAML\Module::getModuleURL('season/res/icon.ico')) ?>">
     <link href="<?= SimpleSAML\Module::getModuleURL('season/libs/tabler/dist/css/tabler.min.css'); ?>" rel="stylesheet" />
@@ -46,13 +29,21 @@ $config = \SimpleSAML\Configuration::getInstance();
 
     <script src="<?= SimpleSAML\Module::getModuleURL('season/libs/jquery-3.5.1.min.js'); ?>"></script>
     <script src="<?= SimpleSAML\Module::getModuleURL('season/libs/tabler/dist/js/tabler.min.js'); ?>"></script>
-    <script src="<?= SimpleSAML\Module::getModuleURL('season/libs/tabler/dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js'); ?>"></script>
+    <script src="<?= SimpleSAML\Module::getModuleURL('season/libs/bootstrap/popper.min.js'); ?>"></script>
+    <script src="<?= SimpleSAML\Module::getModuleURL('season/libs/bootstrap/bootstrap.min.js'); ?>"></script>
+    <script src="<?= SimpleSAML\Module::getModuleURL('season/libs/moment.min.js'); ?>"></script>
 
     <?php
     if (isset($this->data['clipboard.js'])) {
         echo '<script type="text/javascript" src="/' . $this->data['baseurlpath'] . 'resources/clipboard.min.js"></script>' . "\n";
     }
     ?>
+
+    <style>
+        .nav-item.active:after {
+            border-color: #FF7F11 !important;
+        }
+    </style>
 </head>
 
 <body class="antialiased">
@@ -66,7 +57,7 @@ $config = \SimpleSAML\Configuration::getInstance();
                     <a href="/<?= $this->data['baseurlpath']; ?>" style="margin-right: 12px;">
                         <img src="<?= $config->getString('theme.logo', SimpleSAML\Module::getModuleURL('season/res/logo.png')) ?>" height="32" class="navbar-brand-image">
                     </a>
-                    <?= (isset($this->data['header']) ? $this->data['header'] : 'SimpleSAMLphp'); ?>
+                    <?= $seasonConfig->getString("title", "simpleSAMLphp") ?>
                 </h1>
             </div>
         </header>
@@ -75,22 +66,23 @@ $config = \SimpleSAML\Configuration::getInstance();
             <div class="collapse navbar-collapse" id="navbar-menu">
                 <div class="navbar navbar-light">
                     <div class="container">
-                        <?php
-                        if (!empty($this->data['htmlinject']['htmlContentPre'])) {
-                            foreach ($this->data['htmlinject']['htmlContentPre'] as $c) {
-                                echo $c;
+                        <ul class="navbar-nav">
+                            <?php
+                            $menu = $seasonConfig->getValue('menu', array());
+                            foreach ($menu as $m) {
+                                $href = "/" . $this->data['baseurlpath'] . "module.php/" . $m["href"];
+                                if(isset($m["pattern"])) $pattern = "/" . $this->data['baseurlpath'] . "module.php/" . $m["pattern"];
+                                else $pattern = "/" . $this->data['baseurlpath'] . "module.php/" . $m["href"];
+                                $active = strrpos($current, $pattern, -strlen($current)) !== false ? "active" : "";
+                            ?>
+                                <li class="nav-item <?= $active ?>">
+                                    <a class="nav-link" href="<?= $href ?>" thref="<?= $current ?>"><?= $m['title'] ?></a>
+                                </li>
+                            <?php
                             }
-                        } else {
-                        ?>
-                            <ul class="navbar-nav">
-                                <li class="nav-item"><a class="nav-link" href="/<?= $this->data['baseurlpath'] ?>module.php/core/frontpage_welcome.php">Welcome</a></li>
-                                <li class="nav-item"><a class="nav-link" href="/<?= $this->data['baseurlpath'] ?>module.php/core/frontpage_config.php">Configuration</a></li>
-                                <li class="nav-item"><a class="nav-link" href="/<?= $this->data['baseurlpath'] ?>module.php/core/frontpage_auth.php">Authentication</a></li>
-                                <li class="nav-item"><a class="nav-link" href="/<?= $this->data['baseurlpath'] ?>module.php/core/frontpage_federation.php">Federation</a></li>
-                            </ul>
-                        <?php
-                        }
-                        ?>
+                            ?>
+
+                        </ul>
 
                         <?php
                         if (isset($this->data['logouturl'])) {
